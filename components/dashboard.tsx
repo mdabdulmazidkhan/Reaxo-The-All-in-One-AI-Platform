@@ -101,7 +101,7 @@ function ProviderLogo({ provider, size = "md" }: { provider: string; size?: "sm"
 
 export default function Dashboard({ user, onLogout, onOpenProfile, isGuest = false }: DashboardProps) {
   const [enabledModels, setEnabledModels] = useState<Set<string>>(() => {
-    const defaultProviders = ["Google", "Anthropic", "OpenAI", "xAI", "DeepSeek"]
+    const defaultProviders = ["Google", "Anthropic", "OpenAI", "xAI"] // Removed DeepSeek from default providers - now only 4 models
     const defaultModelIds: string[] = []
 
     for (const provider of defaultProviders) {
