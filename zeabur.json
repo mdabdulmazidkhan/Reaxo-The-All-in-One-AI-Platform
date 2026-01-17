@@ -4,15 +4,11 @@
     "type": "nodejs",
     "nodejs": {
       "framework": "next.js",
-      "node_version": "22",
+      "node_version": "21",
       "package_manager": "pnpm"
     }
   },
   "start": {
     "command": "pnpm start"
-  },
-  "output": {
-    "type": "nextjs",
-    "standalone": true
   }
 }
