@@ -5,7 +5,7 @@ import type React from "react"
 import { useState, useRef } from "react"
 import { X, Camera, Loader2, User, Mail, Save } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { getSupabaseBrowserClient } from "@/lib/supabase/client"
+import { insforgeClient } from "@/lib/insforge-client"
 
 const DEFAULT_AVATAR = "/images/default-avatar.webp"
 
@@ -20,76 +20,52 @@ interface ProfileModalProps {
   isOpen: boolean
   onClose: () => void
   profile: Profile
-  onUpdate: (profile: Profile) => void
+  token: string | null
+  onUpdate: (user: any) => void
 }
 
-export default function ProfileModal({ isOpen, onClose, profile, onUpdate }: ProfileModalProps) {
+export default function ProfileModal({ isOpen, onClose, profile, token, onUpdate }: ProfileModalProps) {
   const [fullName, setFullName] = useState(profile.full_name || "")
   const [avatarUrl, setAvatarUrl] = useState(profile.avatar_url || DEFAULT_AVATAR)
   const [isLoading, setIsLoading] = useState(false)
-  const [isUploading, setIsUploading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
-  const fileInputRef = useRef<HTMLInputElement>(null)
-
-  const supabase = getSupabaseBrowserClient()
-
-  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (!file) return
-
-    setIsUploading(true)
-    setError(null)
-
-    try {
-      const fileExt = file.name.split(".").pop()
-      const fileName = `${profile.id}-${Date.now()}.${fileExt}`
-      const filePath = `avatars/${fileName}`
-
-      const { error: uploadError } = await supabase.storage.from("avatars").upload(filePath, file, { upsert: true })
-
-      if (uploadError) throw uploadError
-
-      const { data } = supabase.storage.from("avatars").getPublicUrl(filePath)
-      setAvatarUrl(data.publicUrl)
-    } catch (err) {
-      setError("Failed to upload avatar. Please try again.")
-      console.error(err)
-    } finally {
-      setIsUploading(false)
-    }
-  }
+  const [isUploading, setIsUploading] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement | null>(null)
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault()
+    if (!token) return
+
     setIsLoading(true)
     setError(null)
     setSuccess(false)
 
-    const { error } = await supabase
-      .from("profiles")
-      .update({
-        full_name: fullName,
-        avatar_url: avatarUrl,
-        updated_at: new Date().toISOString(),
-      })
-      .eq("id", profile.id)
+    const { user, error } = await insforgeClient.updateProfile(token, fullName, avatarUrl)
 
     if (error) {
-      setError(error.message)
-    } else {
+      setError(error)
+    } else if (user) {
       setSuccess(true)
-      onUpdate({
-        ...profile,
-        full_name: fullName,
-        avatar_url: avatarUrl,
-      })
+      onUpdate(user)
       setTimeout(() => {
         onClose()
       }, 1000)
     }
 
     setIsLoading(false)
+  }
+
+  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    setIsUploading(true)
+
+    // Handle file upload logic here
+    // For example, you can use a library like axios to upload the file to a server
+
+    setIsUploading(false)
   }
 
   if (!isOpen) return null
@@ -131,22 +107,11 @@ export default function ProfileModal({ isOpen, onClose, profile, onUpdate }: Pro
 
           {/* Avatar */}
           <div className="flex justify-center mb-6">
-            <div className="relative">
-              <img
-                src={avatarUrl || DEFAULT_AVATAR}
-                alt="Profile"
-                className="w-24 h-24 rounded-full object-cover border-4 border-zinc-800"
-              />
-              <button
-                type="button"
-                onClick={() => fileInputRef.current?.click()}
-                disabled={isUploading}
-                className="absolute bottom-0 right-0 p-2 bg-cyan-500 hover:bg-cyan-600 rounded-full text-white shadow-lg transition-colors"
-              >
-                {isUploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Camera className="w-4 h-4" />}
-              </button>
-              <input ref={fileInputRef} type="file" accept="image/*" onChange={handleAvatarUpload} className="hidden" />
-            </div>
+            <img
+              src={avatarUrl || DEFAULT_AVATAR}
+              alt="Profile"
+              className="w-24 h-24 rounded-full object-cover border-4 border-zinc-800"
+            />
           </div>
 
           <div className="space-y-4">

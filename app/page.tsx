@@ -5,90 +5,66 @@ import LandingPage from "@/components/landing-page"
 import Dashboard from "@/components/dashboard"
 import AuthModal from "@/components/auth-modal"
 import ProfileModal from "@/components/profile-modal"
-import { getSupabaseBrowserClient } from "@/lib/supabase/client"
-import type { User } from "@supabase/supabase-js"
+import { insforgeClient } from "@/lib/insforge-client"
 
-interface Profile {
+interface User {
   id: string
   email: string
-  full_name: string | null
-  avatar_url: string | null
+  full_name: string
+  avatar_url: string
 }
 
 export default function Home() {
   const [user, setUser] = useState<User | null>(null)
-  const [profile, setProfile] = useState<Profile | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [showAuthModal, setShowAuthModal] = useState(false)
   const [showProfileModal, setShowProfileModal] = useState(false)
-  const [isGuestMode, setIsGuestMode] = useState(false) // Added guest mode state
-
-  const supabase = getSupabaseBrowserClient()
+  const [isGuestMode, setIsGuestMode] = useState(false)
+  const [token, setToken] = useState<string | null>(null)
+  const [profile, setProfile] = useState<User | null>(null) // Declare profile variable
 
   useEffect(() => {
-    // Check initial session
-    const checkSession = async () => {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession()
-      if (session?.user) {
-        setUser(session.user)
-        await fetchProfile(session.user.id)
-      }
+    // Check if user is already logged in
+    const storedToken = localStorage.getItem("insforge_token")
+    if (storedToken) {
+      fetchUser(storedToken)
+    } else {
       setIsLoading(false)
     }
-
-    checkSession()
-
-    // Listen for auth changes
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (session?.user) {
-        setUser(session.user)
-        await fetchProfile(session.user.id)
-        setIsGuestMode(false) // Exit guest mode when user logs in
-      } else {
-        setUser(null)
-        setProfile(null)
-      }
-    })
-
-    return () => subscription.unsubscribe()
   }, [])
 
-  const fetchProfile = async (userId: string) => {
-    const { data, error } = await supabase.from("profiles").select("*").eq("id", userId).single()
-
-    if (!error && data) {
-      setProfile(data)
+  const fetchUser = async (authToken: string) => {
+    const { user, error } = await insforgeClient.getUser(authToken)
+    if (user) {
+      setUser(user)
+      setToken(authToken)
+      setProfile(user) // Set profile variable
+    } else {
+      localStorage.removeItem("insforge_token")
     }
+    setIsLoading(false)
   }
 
-  const handleLogout = async () => {
+  const handleLogout = () => {
     if (isGuestMode) {
       setIsGuestMode(false)
       return
     }
-    await supabase.auth.signOut()
+    localStorage.removeItem("insforge_token")
     setUser(null)
-    setProfile(null)
+    setToken(null)
+    setProfile(null) // Reset profile variable
   }
 
-  const handleAuthSuccess = async () => {
+  const handleAuthSuccess = (authToken: string) => {
     setShowAuthModal(false)
-    setIsGuestMode(false) // Exit guest mode on successful auth
-    const {
-      data: { session },
-    } = await supabase.auth.getSession()
-    if (session?.user) {
-      setUser(session.user)
-      await fetchProfile(session.user.id)
-    }
+    setIsGuestMode(false)
+    fetchUser(authToken)
   }
 
-  const handleProfileUpdate = (updatedProfile: Profile) => {
-    setProfile(updatedProfile)
+  const handleProfileUpdate = (updatedUser: User) => {
+    setUser(updatedUser)
+    setProfile(updatedUser) // Update profile variable
   }
 
   const handleTryFirst = () => {
@@ -106,14 +82,14 @@ export default function Home() {
     )
   }
 
-  if (user && profile) {
+  if (user) {
     return (
       <>
         <Dashboard
           user={{
-            name: profile.full_name || profile.email.split("@")[0],
-            email: profile.email,
-            avatar: profile.avatar_url || "/images/default-avatar.webp",
+            name: user.full_name || user.email.split("@")[0],
+            email: user.email,
+            avatar: user.avatar_url || "/images/default-avatar.webp",
           }}
           onLogout={handleLogout}
           onOpenProfile={() => setShowProfileModal(true)}
@@ -121,7 +97,13 @@ export default function Home() {
         <ProfileModal
           isOpen={showProfileModal}
           onClose={() => setShowProfileModal(false)}
-          profile={profile}
+          profile={{
+            id: user.id,
+            email: user.email,
+            full_name: user.full_name,
+            avatar_url: user.avatar_url,
+          }}
+          token={token}
           onUpdate={handleProfileUpdate}
         />
       </>
@@ -137,7 +119,7 @@ export default function Home() {
           avatar: "/images/default-avatar.webp",
         }}
         onLogout={handleLogout}
-        onOpenProfile={() => setShowAuthModal(true)} // Open auth modal instead of profile for guests
+        onOpenProfile={() => setShowAuthModal(true)}
         isGuest={true}
       />
     )
@@ -150,7 +132,7 @@ export default function Home() {
         isOpen={showAuthModal}
         onClose={() => setShowAuthModal(false)}
         onSuccess={handleAuthSuccess}
-        onTryFirst={handleTryFirst} // Pass try first handler
+        onTryFirst={handleTryFirst}
       />
     </>
   )

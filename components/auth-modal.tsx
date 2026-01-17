@@ -5,13 +5,13 @@ import Image from "next/image"
 import { useState } from "react"
 import { X, Mail, Lock, User, Loader2, Eye, EyeOff, ArrowLeft, Sparkles } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { getSupabaseBrowserClient } from "@/lib/supabase/client"
+import { insforgeClient } from "@/lib/insforge-client"
 
 interface AuthModalProps {
   isOpen: boolean
   onClose: () => void
-  onSuccess: () => void
-  onTryFirst?: () => void // Added onTryFirst callback for guest mode
+  onSuccess: (token: string) => void
+  onTryFirst?: () => void
 }
 
 type AuthMode = "signin" | "signup" | "forgot"
@@ -26,23 +26,19 @@ export default function AuthModal({ isOpen, onClose, onSuccess, onTryFirst }: Au
   const [error, setError] = useState<string | null>(null)
   const [message, setMessage] = useState<string | null>(null)
 
-  const supabase = getSupabaseBrowserClient()
-
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
     setError(null)
 
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    })
+    const { user, token, error } = await insforgeClient.signIn(email, password)
 
     if (error) {
-      setError(error.message)
+      setError(error)
       setIsLoading(false)
-    } else {
-      onSuccess()
+    } else if (token) {
+      localStorage.setItem("insforge_token", token)
+      onSuccess(token)
     }
   }
 
@@ -51,23 +47,14 @@ export default function AuthModal({ isOpen, onClose, onSuccess, onTryFirst }: Au
     setIsLoading(true)
     setError(null)
 
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        emailRedirectTo: process.env.NEXT_PUBLIC_DEV_SUPABASE_REDIRECT_URL || window.location.origin,
-        data: {
-          full_name: fullName,
-        },
-      },
-    })
+    const { user, error } = await insforgeClient.signUp(email, password, fullName)
 
     if (error) {
-      setError(error.message)
+      setError(error)
       setIsLoading(false)
-    } else {
-      setMessage("Check your email to confirm your account!")
-      setIsLoading(false)
+    } else if (user) {
+      setMessage("Account created successfully! Please sign in.")
+      switchMode("signin")
     }
   }
 
@@ -76,16 +63,14 @@ export default function AuthModal({ isOpen, onClose, onSuccess, onTryFirst }: Au
     setIsLoading(true)
     setError(null)
 
-    const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/reset-password`,
-    })
+    const { error } = await insforgeClient.forgotPassword(email)
 
     if (error) {
-      setError(error.message)
+      setError(error)
+      setIsLoading(false)
     } else {
-      setMessage("Check your email for the password reset link!")
+      setMessage("Reset link sent successfully! Please check your email.")
     }
-    setIsLoading(false)
   }
 
   const resetForm = () => {
@@ -126,12 +111,10 @@ export default function AuthModal({ isOpen, onClose, onSuccess, onTryFirst }: Au
           <h2 className="font-semibold text-xl text-white mb-1">
             {mode === "signin" && "Welcome back"}
             {mode === "signup" && "Create your account"}
-            {mode === "forgot" && "Reset password"}
           </h2>
           <p className="text-sm text-zinc-500">
             {mode === "signin" && "Sign in to continue"}
             {mode === "signup" && "Start comparing AI models"}
-            {mode === "forgot" && "We'll email you a reset link"}
           </p>
         </div>
 
@@ -151,18 +134,7 @@ export default function AuthModal({ isOpen, onClose, onSuccess, onTryFirst }: Au
               </Button>
             </div>
           ) : (
-            <form onSubmit={mode === "signin" ? handleSignIn : mode === "signup" ? handleSignUp : handleForgotPassword}>
-              {mode === "forgot" && (
-                <button
-                  type="button"
-                  onClick={() => switchMode("signin")}
-                  className="flex items-center gap-1.5 text-sm text-zinc-500 hover:text-white mb-5 transition-colors"
-                >
-                  <ArrowLeft className="w-3.5 h-3.5" />
-                  Back
-                </button>
-              )}
-
+            <form onSubmit={mode === "signin" ? handleSignIn : handleSignUp}>
               {error && (
                 <div className="mb-5 px-3 py-2.5 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400 text-xs">
                   {error}
@@ -200,44 +172,29 @@ export default function AuthModal({ isOpen, onClose, onSuccess, onTryFirst }: Au
                   </div>
                 </div>
 
-                {mode !== "forgot" && (
-                  <div>
-                    <div className="relative">
-                      <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-600" />
-                      <input
-                        type={showPassword ? "text" : "password"}
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        placeholder="Password"
-                        className="w-full bg-zinc-900/50 border border-zinc-800/50 rounded-xl px-10 py-3 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-zinc-700 focus:bg-zinc-900 transition-all"
-                        required
-                        minLength={6}
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-3.5 top-1/2 -translate-y-1/2 text-zinc-600 hover:text-zinc-400 transition-colors"
-                      >
-                        {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                      </button>
-                    </div>
-                  </div>
-                )}
-
-                {mode === "signin" && (
-                  <div className="flex justify-end pt-1">
+                <div>
+                  <div className="relative">
+                    <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-600" />
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      placeholder="Password"
+                      className="w-full bg-zinc-900/50 border border-zinc-800/50 rounded-xl px-10 py-3 text-sm text-white placeholder-zinc-600 focus:outline-none focus:border-zinc-700 focus:bg-zinc-900 transition-all"
+                      required
+                      minLength={6}
+                    />
                     <button
                       type="button"
-                      onClick={() => switchMode("forgot")}
-                      className="text-xs text-zinc-500 hover:text-zinc-300 transition-colors"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3.5 top-1/2 -translate-y-1/2 text-zinc-600 hover:text-zinc-400 transition-colors"
                     >
-                      Forgot password?
+                      {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                     </button>
                   </div>
-                )}
+                </div>
               </div>
 
-              {/* Button */}
               <Button
                 type="submit"
                 disabled={isLoading}
@@ -247,14 +204,12 @@ export default function AuthModal({ isOpen, onClose, onSuccess, onTryFirst }: Au
                   <Loader2 className="w-4 h-4 animate-spin" />
                 ) : mode === "signin" ? (
                   "Sign In"
-                ) : mode === "signup" ? (
-                  "Create Account"
                 ) : (
-                  "Send Reset Link"
+                  "Create Account"
                 )}
               </Button>
 
-              {mode !== "forgot" && onTryFirst && (
+              {onTryFirst && (
                 <Button
                   type="button"
                   onClick={onTryFirst}
@@ -266,18 +221,16 @@ export default function AuthModal({ isOpen, onClose, onSuccess, onTryFirst }: Au
                 </Button>
               )}
 
-              {mode !== "forgot" && (
-                <p className="mt-5 text-center text-xs text-zinc-600">
-                  {mode === "signin" ? "Don't have an account?" : "Already have an account?"}{" "}
-                  <button
-                    type="button"
-                    onClick={() => switchMode(mode === "signin" ? "signup" : "signin")}
-                    className="text-white hover:text-zinc-300 font-medium transition-colors"
-                  >
-                    {mode === "signin" ? "Sign up" : "Sign in"}
-                  </button>
-                </p>
-              )}
+              <p className="mt-5 text-center text-xs text-zinc-600">
+                {mode === "signin" ? "Don't have an account?" : "Already have an account?"}{" "}
+                <button
+                  type="button"
+                  onClick={() => switchMode(mode === "signin" ? "signup" : "signin")}
+                  className="text-white hover:text-zinc-300 font-medium transition-colors"
+                >
+                  {mode === "signin" ? "Sign up" : "Sign in"}
+                </button>
+              </p>
             </form>
           )}
         </div>
