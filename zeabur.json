@@ -1,0 +1,18 @@
+{
+  "$schema": "https://zeabur.com/schemas/zeabur.json",
+  "build": {
+    "type": "nodejs",
+    "nodejs": {
+      "framework": "next.js",
+      "node_version": "22",
+      "package_manager": "pnpm"
+    }
+  },
+  "start": {
+    "command": "pnpm start"
+  },
+  "output": {
+    "type": "nextjs",
+    "standalone": true
+  }
+}
