@@ -6,7 +6,7 @@
     "build": "next build",
     "dev": "next dev",
     "lint": "next lint",
-    "start": "next start -p ${PORT:-3000}"
+    "start": "next start"
   },
   "dependencies": {
     "@ai-sdk/openai": "3.0.12",
