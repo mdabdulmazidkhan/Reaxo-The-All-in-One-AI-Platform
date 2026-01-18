@@ -1,4 +1,4 @@
-"use client"
+'use client';
 
 import type React from "react"
 import { useState, useRef, useEffect } from "react"
@@ -18,9 +18,9 @@ import {
   UserPlus,
   XCircle,
 } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { MODELS, PROVIDER_LOGOS, type Model } from "@/lib/models"
-import { MarkdownRenderer } from "@/components/markdown-renderer"
+import { Button } from "./ui/button"
+import { MODELS, PROVIDER_LOGOS, type Model } from "../lib/models"
+import { MarkdownRenderer } from "./markdown-renderer"
 
 interface DashboardProps {
   user: {

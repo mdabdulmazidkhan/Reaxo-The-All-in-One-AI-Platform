@@ -1,9 +1,9 @@
-"use client"
+'use client';
 
 import { useState, useEffect, useMemo } from "react"
 import { ArrowRight, Menu, X } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { MODELS, PROVIDER_LOGOS } from "@/lib/models"
+import { Button } from "./ui/button"
+import { MODELS, PROVIDER_LOGOS } from "../lib/models"
 
 interface LandingPageProps {
   onLogin: () => void

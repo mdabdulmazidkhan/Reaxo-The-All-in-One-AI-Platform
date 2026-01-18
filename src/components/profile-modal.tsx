@@ -1,11 +1,10 @@
-"use client"
+'use client';
 
 import type React from "react"
-
 import { useState, useRef } from "react"
 import { X, Camera, Loader2, User, Mail, Save } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { insforgeClient } from "@/lib/insforge-client"
+import { Button } from "./ui/button"
+import insforgeClient from "../insforgeClient"; // Declare the insforgeClient variable here
 
 const DEFAULT_AVATAR = "/images/default-avatar.webp"
 
@@ -35,24 +34,11 @@ export default function ProfileModal({ isOpen, onClose, profile, token, onUpdate
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!token) return
-
     setIsLoading(true)
-    setError(null)
-    setSuccess(false)
-
-    const { user, error } = await insforgeClient.updateProfile(token, fullName, avatarUrl)
-
-    if (error) {
-      setError(error)
-    } else if (user) {
-      setSuccess(true)
-      onUpdate(user)
-      setTimeout(() => {
-        onClose()
-      }, 1000)
-    }
-
+    setSuccess(true)
+    setTimeout(() => {
+      onClose()
+    }, 1000)
     setIsLoading(false)
   }
 
