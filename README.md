@@ -16,7 +16,6 @@ Reaxo is an all-in-one, scalable web platform that brings multiple AI capabiliti
 
 - Multiple integrated AI capabilities (conversational agents, content generation, and more) in one UI
 - Scalable model hosting and orchestration via Zeabur AI Hub
-- Web app front-end for easy exploration and immediate testing
 - Deployable to cloud platforms (Zeabur, Vercel, etc.)
 
 ## Quick Start (local)
