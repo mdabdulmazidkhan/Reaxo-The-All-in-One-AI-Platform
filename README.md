@@ -1,30 +1,54 @@
-# Reaxo AI Platform
+# Reaxo — The All-in-One AI Platform 🤖
 
-*Automatically synced with your [v0.app](https://v0.app) deployments*
+Reaxo is an all-in-one, scalable web platform that brings multiple AI capabilities together in a single app. The platform powers its AI models using Zeabur AI Hub, so models run in a hosted, scalable environment while the web app delivers an integrated user experience.
 
-[![Deployed on Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-black?style=for-the-badge&logo=vercel)](https://vercel.com/tonmoy45557-6661s-projects/v0-reaxo-ai-platform)
-[![Built with v0](https://img.shields.io/badge/Built%20with-v0.app-black?style=for-the-badge)](https://v0.app/chat/vXQ3Ldag3yN)
+## Demo & Live Links
 
-## Overview
+- Demo video: https://youtu.be/DyNBTI84YgA  
+  [![Watch the demo](https://img.youtube.com/vi/DyNBTI84YgA/0.jpg)](https://youtu.be/DyNBTI84YgA)
+- Try the live app: https://reaxoappdemo.zeabur.app/
+- Alternative deployment: https://v0-reaxo-ai-platform-khaki.vercel.app/
+- Repository: https://github.com/mdabdulmazidkhan/Reaxo-The-All-in-One-AI-Platform
 
-This repository will stay in sync with your deployed chats on [v0.app](https://v0.app).
-Any changes you make to your deployed app will be automatically pushed to this repository from [v0.app](https://v0.app).
+> Note: The AI models and services are hosted and served via Zeabur AI Hub. Use the live links above to try the app directly.
 
-## Deployment
+## What Reaxo Offers
 
-Your project is live at:
+- Multiple integrated AI capabilities (conversational agents, content generation, and more) in one UI
+- Scalable model hosting and orchestration via Zeabur AI Hub
+- Web app front-end for easy exploration and immediate testing
+- Deployable to cloud platforms (Zeabur, Vercel, etc.)
 
-**[https://vercel.com/tonmoy45557-6661s-projects/v0-reaxo-ai-platform](https://vercel.com/tonmoy45557-6661s-projects/v0-reaxo-ai-platform)**
+## Quick Start (local)
 
-## Build your app
+1. Clone the repo:
+   git clone https://github.com/mdabdulmazidkhan/Reaxo-The-All-in-One-AI-Platform.git
+2. Install dependencies:
+   cd Reaxo-The-All-in-One-AI-Platform
+   npm install
+3. Configure environment:
+   - Create any required environment variables for Zeabur AI Hub access (API keys, endpoints). Check the project config files for exact variable names.
+4. Run locally:
+   npm run dev
+5. Open http://localhost:3000 (or the port printed by the dev server)
 
-Continue building your app on:
+(See the repository for exact scripts, config files, and environment variable names used by the project.)
 
-**[https://v0.app/chat/vXQ3Ldag3yN](https://v0.app/chat/vXQ3Ldag3yN)**
+## Architecture & Tech Notes
 
-## How It Works
+- Models and inference are powered by Zeabur AI Hub — Reaxo delegates model hosting and scaling to Zeabur while the app focuses on orchestration and user experience.
+- The app is designed as a scalable web application that can be deployed to platforms like Zeabur and Vercel (example alternative deployment is provided above).
 
-1. Create and modify your project using [v0.app](https://v0.app)
-2. Deploy your chats from the v0 interface
-3. Changes are automatically pushed to this repository
-4. Vercel deploys the latest version from this repository
+## Contributing
+
+Contributions, bug reports, and feature requests are welcome. Please open issues or pull requests in the repository.
+
+## License
+
+See the repository for license details.
+
+---
+If you want, I can:
+- Commit this README directly to the repository,
+- Add a clickable thumbnail that opens the demo in a new tab (already included),
+- Or tailor the installation and environment sections with exact variables from the project files — tell me which you prefer.
