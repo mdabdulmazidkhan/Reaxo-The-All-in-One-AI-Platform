@@ -1,0 +1,1037 @@
+═══════════════════════════════════════════════════════════════════════════════
+                   REAXO: AI CHAT PLATFORM - COMPLETE BUILD PROMPT
+                      Full Layout, Design & Implementation Guide
+═══════════════════════════════════════════════════════════════════════════════
+
+PROJECT OVERVIEW
+================
+
+Build "Reaxo" - a sophisticated multi-AI chat platform that allows users to query multiple AI models simultaneously, compare responses in real-time, and choose the best answer. This is an all-in-one AI comparison platform built with modern web technologies.
+
+The platform supports 20+ AI models from different providers including OpenAI (GPT-5, GPT-4.1, GPT-4o), Anthropic (Claude Sonnet, Claude Haiku), Google (Gemini 3 Pro, Gemini 2.5), xAI (Grok 4), DeepSeek, and many others.
+
+PROJECT TECH STACK
+==================
+
+Frontend:
+- React 19.2 with TypeScript
+- Next.js 16 with App Router (for app pages) + Vite (for src pages)
+- Tailwind CSS v4 with custom design tokens
+- Shadcn/UI components
+- Lucide React icons
+- Zod for validation
+- React Hook Form for form management
+- AI SDK v6 for streaming responses
+
+Backend:
+- Next.js API Routes
+- Zeabur AI Hub for unified AI model access
+- Environment variable: ZEABUR_API_KEY (required for AI model access)
+
+UI Libraries:
+- Radix UI (underlying components)
+- Sonner for toast notifications
+- Recharts for data visualization
+
+Storage & Auth:
+- localStorage for session management (user tokens stored as insforge_token)
+- Supabase integration (for future database and auth)
+- Custom user profile management
+
+DESIGN SYSTEM & COLORS
+======================
+
+Color Palette (Dark Theme):
+- Background: Pure black (oklch(0 0 0))
+- Foreground: Near white (oklch(0.985 0 0))
+- Card/Secondary backgrounds: Dark gray (oklch(0.09 0 0) and oklch(0.15 0 0))
+- Primary accent: Cyan blue (oklch(0.7 0.15 195))
+- Borders: Subtle white with low opacity (borders appear as white/5 to white/20)
+- Sidebar: Extra dark (oklch(0.05 0 0))
+
+The entire application uses a sophisticated dark theme with minimal color use. Accent colors are primarily cyan/blue for interactive elements and action buttons, with subtle white accents throughout.
+
+Gradients used:
+- Hero section has layered background orbs: indigo-500/20, purple-500/20, and cyan-500/10 with blur effects
+- Text gradients: gradient from cyan-400 through violet-400 to pink-400 (used in hero headline)
+
+Typography:
+- Font family: Inter (sans-serif) for all text
+- Font weights: Regular (400) for body, Medium (500) for labels, Semibold (600) for headings, Bold (700) for main headings
+- Line heights: 1.4-1.6 for readability
+- Font sizes used: 10px (labels), 11px (model names), 12px (descriptions), 14px (body), 16px (regular text), 18-20px (section text), 24-32px (headings), 48-96px (hero text)
+
+LAYOUT STRUCTURE & RESPONSIVE DESIGN
+====================================
+
+The application has three main pages/sections:
+
+1. LANDING PAGE (for non-authenticated users)
+2. AUTHENTICATION MODAL (signup/signin overlay)
+3. DASHBOARD (main application interface after login)
+
+All layouts follow a mobile-first approach with progressive enhancement for larger screens.
+
+
+SECTION 1: LANDING PAGE
+=======================
+
+The landing page is a single-page experience showcasing the platform's capabilities.
+
+1.1 NAVIGATION BAR (Fixed, top of page)
+---------------------------------------
+- Fixed positioning with z-index 50
+- Scrollable state detection: becomes semi-transparent (bg-black/80 with backdrop blur) when user scrolls past 20px
+- Container: max-width 7xl with centered content padding (6 units)
+- Left section: Logo (8x8) + "Reaxo" text (xl, bold, tight tracking)
+- Middle section (desktop only, hidden on mobile): "Features" link, "Models" link, vertical separator (1px white/10), "Sign In" text button
+- Right section: "Get Started" button (white background, black text, rounded full, px-6)
+- Mobile menu: Hamburger icon showing/hiding full-screen menu overlay with same links in vertical layout
+
+2.1 HERO SECTION
+----------------
+- Minimum height: 100% viewport height
+- Relative positioning with overflow hidden for background effects
+- Container background: black
+- Text color: white
+
+Background Effects:
+- Three animated orbs positioned absolutely
+  - Top-left orb: indigo-500/20, 384x384, rounded-full, blur-3xl, animate-pulse
+  - Bottom-right orb: purple-500/20, 384x384, rounded-full, blur-3xl, animate-pulse with 1s delay
+  - Center orb: cyan-500/10, 600x600, rounded-full, blur-3xl, no animation, positioned at center
+
+Hero Content (relative z-10):
+- Centered text layout with max-width 5xl
+- Badge above headline: "Build for [Zeabur logo] Zeabur Ship It Hackathon" in dark rounded pill shape
+
+Main Headline:
+"Use all AI models [animated word here] easily"
+- 5xl on mobile, 7xl on tablet, 8xl on desktop
+- Font bold with tight tracking
+- Two lines of text
+- Animated word switches between "Parallelly", "Efficiently", "Easily" with typing effect
+- Text gradient from cyan-400 → violet-400 → pink-400 applied to animated word
+- Blinking cursor animated after the word
+
+Subheadline:
+"Stop juggling tabs. Get answers from GPT-5, Claude, Gemini, Grok, and [20+] AI models side-by-side with a single prompt. Compare instantly, pick the best."
+- Large readable text (lg on mobile, xl on tablet)
+- Zinc-400 color for secondary text
+- Max-width 2xl, centered, balanced text wrapping
+
+CTA Buttons:
+- Primary button: White background, black text, "Sign Up Free" text with arrow icon (ArrowRight), hover effect translates arrow right
+- Secondary button: Outline variant, "Login", white border, dark background
+- Layout: Column on mobile, row on tablet+, gap 4, centered
+
+2.2 INTERACTIVE MOCKUP
+---------------------
+This is a large preview showing the actual dashboard interface in an isometric perspective.
+
+Container:
+- Max-width 6xl, relative positioning with perspective transform
+- Hover effect: slight rotation (rotate-x-12)
+- Background: semi-transparent dark card (bg-zinc-900/50) with border (white/10) and rounded-2xl
+- Subtle drop shadow
+
+Browser Chrome:
+- Header bar with 3 traffic lights (red, yellow, green) on left
+- Center shows "reaxo.app" in small text
+- Bottom border to separate from content
+
+Layout contains two main sections: Sidebar + Main Content Area
+
+SIDEBAR (left section, hidden on mobile):
+- Width: 224px (w-56)
+- Background: zinc-950/80
+- Right border: white/5
+- Padding: 4 units
+- Logo and title at top with 6 unit bottom margin
+
+Model Selection Section:
+- "MODELS" label in uppercase, text-xs, zinc-500, tracking wider, 2 unit bottom margin
+- List of 5 sample models shown:
+  * GPT-4o (OpenAI, white background logo, active)
+  * Claude 4.5 (Anthropic, #D97757 background logo, active)
+  * Gemini 2.5 (Google, white background logo, active)
+  * Grok 3 (xAI, black background logo, active)
+  * DeepSeek (DeepSeek, white background logo, inactive/grayed)
+
+Each model item:
+- Flex row, 2 unit gap
+- Padding: 2 units horizontal, 1.5 units vertical
+- Rounded-lg
+- When active: bg-white/5
+- When inactive: opacity-40
+- Contains: provider logo (5x5, rounded-full, provider brand color), model name (truncated), toggle switch (7x4, rounded-full, switches from left to right based on state)
+
+Action buttons:
+- "All On" button: emerald-500/20 background, emerald-400 text, centered text, 1.5 unit padding
+- "All Off" button: zinc-800 background, zinc-400 text
+- Both buttons have rounded corners
+
+MAIN CONTENT AREA (right section):
+- Flex column layout
+- Gradient background: from-zinc-950 to-black
+- Padding: 4 units
+
+User Message Display:
+- Max-width 3xl, centered horizontally, margin-bottom 4
+- Background: zinc-800/60
+- Rounded: 2xl with rounded-tl-sm (top-left square)
+- Padding: px-4, py-2.5
+- Shows user avatar (7x7 rounded) and message "Explain quantum computing in simple terms"
+
+AI Response Grid:
+- Grid layout with 2 columns on mobile, 4 columns on larger screens
+- Gap: 3 units between cards
+- Each card: 320px equivalent width
+
+Response Card Structure:
+Each card contains:
+- Header section (gray background, border-bottom, contains model logo, name, and provider)
+- Body section (p-3, h-24, content clipped to 5 lines, shows AI response text in 10px font)
+- Footer section (gray background, border-top, shows word count and copy button)
+
+Floating Input Bar (bottom of main area):
+- Padding: 4 units (pt-0 to avoid excess padding)
+- Max-width 2xl, centered
+- Background: zinc-800/80 with border (white/10)
+- Rounded: 2xl
+- Padding: px-4, py-3
+- Flex layout with: icon button + text input area + keyboard shortcut display + send button
+
+Send button styling:
+- White background, 8x8 rounded-xl, flex center
+- Icon: paper plane (6x6, black color)
+
+Keyboard shortcut display:
+- Hidden on small screens
+- Shows "⌘ K" in monospace
+- Background: zinc-700/50
+- Padding: px-2, py-1
+- Rounded, small font (10px)
+
+Disclaimer text below input:
+- Amber-500/60 color
+- 10px font
+- Centered
+- "Reaxo AI can make mistakes. Consider checking important information."
+
+2.3 MODEL SHOWCASE MARQUEE SECTION
+----------------------------------
+- Section ID: "models"
+- Padding: 20 units vertical
+- Border: top and bottom with white/5
+- Overflow: hidden
+
+Heading:
+- "20+ AI Models Available"
+- Centered, 2xl font, bold
+
+Marquee Animation:
+- Horizontal scrolling marquee that loops infinitely
+- Contains model logos and names
+- Duplicated content for seamless loop
+- Models included: GPT-5, GPT-4o, Claude Sonnet, Claude Haiku, Gemini Pro, Gemini Flash, Grok 4, DeepSeek, GLM, Kimi, Llama, Qwen
+
+2.4 FEATURES SECTION
+-------------------
+- Section ID: "features"
+- Full-width background
+- Contains feature cards highlighting key benefits
+
+Features highlighted:
+1. Compare Multiple AIs: "Query multiple AI models with a single prompt"
+2. Instant Results: "Get responses from all models simultaneously"
+3. Easy Selection: "Toggle models on/off to customize your experience"
+4. Side-by-side Comparison: "Review and compare answers from different AIs"
+5. One Platform: "Access all leading AI models in one place"
+6. Cost-effective: "Pay only for what you use"
+
+Each feature card:
+- Flex layout
+- Icon or visual element
+- Heading (semibold)
+- Description (zinc-400 color, smaller text)
+- Subtle background
+
+2.5 FOOTER
+---------
+- Dark background with subtle border-top
+- Contains: Links, copyright info
+- Centered text
+- Padding around 8-12 units vertical
+
+
+SECTION 2: AUTHENTICATION MODAL
+================================
+
+Modal Overlay:
+- Fixed positioning covering entire viewport (inset-0)
+- Z-index: 50
+- Padding: 4 units
+- Background overlay: black/90 with backdrop-blur-md
+
+Modal Container:
+- Max-width: sm (32rem)
+- Width: 100%
+- Background: zinc-950 with border (zinc-800/50)
+- Rounded: 3xl (large rounded corners)
+- Overflow: hidden
+- Shadow: shadow-2xl
+
+Close Button:
+- Absolute positioning (top-5, right-5)
+- Icon button (X from lucide)
+- Zinc-600 color, hover to white
+
+Modal Header:
+- Padding: 8 units horizontal, 10 units top, 8 units bottom
+- Text centered
+
+Logo:
+- Reaxo logo, 12x12 size
+- Centered with 4 unit margin-bottom
+
+Title: "Welcome to Reaxo"
+- xl font, semibold, white color, 2 unit margin-bottom
+
+Subtitle: "Enter your name to start comparing AI models"
+- sm font, zinc-500 color
+
+Modal Form:
+- Padding: 8 units horizontal, 10 units bottom
+
+Full Name Input Field:
+- Relative positioning
+- Icon (User from lucide) positioned absolutely left with positioning adjustments
+- Input: type="text", bg-zinc-900/50, border (zinc-800/50), rounded-xl, padding (px-10, py-3)
+- Text color: white, placeholder: zinc-600
+- Focus state: border-zinc-700, bg-zinc-900
+- Margin-bottom: 5 units
+
+Primary Button:
+- Type: submit
+- Width: 100%
+- Background: white, hover: zinc-200
+- Text: black, "Enter"
+- Rounded: xl
+- Padding: py-3
+- Font: sm, medium weight
+- Transition: all duration
+
+Secondary Button (Try First):
+- Type: button
+- Width: 100%
+- Margin-top: 3 units
+- Background: zinc-900/50, hover: zinc-800
+- Text color: zinc-300, hover: white
+- Border: zinc-800/50
+- Rounded: xl
+- Padding: py-3
+- Contains icon (Sparkles in emerald-500) + text "Try First Without Account"
+- Font: sm, medium weight
+
+Form states:
+- When loading: Button shows "Loading..." and is disabled
+- When fields empty: Submit button is disabled
+
+
+SECTION 3: DASHBOARD (Main Application)
+========================================
+
+Container:
+- Full screen height (h-screen)
+- Black background
+- White text
+- Flex layout with overflow hidden
+
+3.1 MOBILE SIDEBAR TOGGLE BUTTON
+--------------------------------
+- Fixed positioning (top-4, left-4)
+- Z-index: 50
+- Padding: 2.5 units
+- Background: zinc-900/80 with backdrop blur
+- Border: zinc-800
+- Rounded: xl
+- Hover: bg-zinc-800
+- Shows Menu icon when sidebar closed, X icon when open
+- Visible only on mobile (md:hidden)
+
+3.2 SIDEBAR (Left Section)
+--------------------------
+Positioning:
+- Fixed on mobile, relative on desktop
+- Full height (inset-y-0)
+- Left aligned (left-0)
+- Width: 288px (w-72)
+- Z-index: 40
+- Background: zinc-950
+- Border-right: zinc-800
+- Transition effect when opening/closing on mobile
+
+Internal Structure:
+- Flex column, full height
+
+Header Section:
+- Padding: 5 units
+- Border-bottom: zinc-800
+- Contains: Logo (10x10) + Title "Reaxo" (lg font, bold) + Subtitle "Multi-AI Chat Platform" (xs, zinc-500)
+
+Model Selection Section:
+- Padding: 4 units
+- Border-bottom: zinc-800
+
+Header:
+- Flex items-center justify-between, margin-bottom 4
+- Left: "MODELS (X/20)" text in xs, semibold, zinc-400, uppercase, tracking wider
+- Right: "All" link (xs, cyan-500, medium, hoverable) + separator (|) + "None" link (xs, zinc-500, medium, hoverable)
+
+Model List:
+- Max-height: 55vh (limited scrollable area)
+- Overflow-y-auto with custom scrollbar
+- Padding-right: 1 unit
+- Space-y-4 gap between provider groups
+
+Provider Group:
+- Sticky positioning at top
+- Background: zinc-950
+- Contains: Provider logo (sm size) + provider name
+- Margin-bottom: 2 units
+
+Individual Model Toggle:
+- Full width button
+- Padding: px-3, py-2.5
+- Rounded: lg
+- Text: sm, truncated, medium weight
+- When enabled: bg-zinc-800/80, white text, border (zinc-700)
+- When disabled: transparent background, zinc-500 text, hover: bg-zinc-900/80, hover: text-zinc-300, border transparent
+- Contains: model name (left) + toggle icon (right, ToggleRight when enabled, ToggleLeft when disabled)
+- Toggle icon color: cyan-500 when enabled, zinc-600 when disabled
+
+Actions Section:
+- Padding: 4 units
+- Flex: 1 (grows to fill available space)
+
+Clear Chat Button:
+- Full width
+- Outline variant
+- Background: zinc-900, border: zinc-800
+- Hover: bg-zinc-800, border-zinc-700
+- Text: zinc-300 (small)
+- Icon: Trash2 (4x4)
+- Rounded: lg
+- Padding: py-2.5, px-4
+- Gap: 3 units
+
+User Profile Section:
+- Padding: 4 units
+- Border-top: zinc-800
+- Margin-top: auto (positioned at bottom)
+
+Guest Mode:
+- Space-y-3 layout
+- Profile info box: flex row, gap-3, p-3, bg-zinc-900, rounded-xl, border (zinc-800)
+  * Avatar: 10x10 rounded-full, opacity-60
+  * Text: "Guest Mode" (sm, medium, zinc-400), "Chat history not saved" (xs, zinc-600)
+- Sign Up button: white background, full width, rounded-xl, py-2.5, text-sm, medium font
+  * Icon: UserPlus (4x4, mr-2)
+  * Text: "Sign Up to Save Chats"
+- Exit link: full width, text-xs, zinc-600, hover: zinc-400
+
+Logged-in User Mode:
+- Profile box: flex row, gap-3, p-3, bg-zinc-900, rounded-xl, border (zinc-800), cursor-pointer, hover: bg-zinc-800
+  * Avatar: 10x10, rounded-full, object-cover
+  * User name (sm, medium, truncated)
+  * User email (xs, zinc-500, truncated)
+  * Logout button (right side): p-2, icon (LogOut 4x4), zinc-500 text, hover: white
+
+3.3 MAIN CONTENT AREA
+--------------------
+Container:
+- Flex: 1 (grows to fill remaining space)
+- Flex column layout
+- Relative positioning
+- Gradient background: from-zinc-950 via-zinc-950 to-zinc-900
+
+Messages/Conversations Area:
+- Flex: 1 (grows to fill available space)
+- Overflow-y-auto (scrollable)
+
+EMPTY STATE (No conversations yet):
+- Flexbox center, full height (h-full)
+- Padding: 4 units
+- Text centered
+
+Main Heading: "What will you create?"
+- 4xl on mobile, 5xl on tablet, 6xl on desktop
+- Bold, white, centered, tight tracking
+- Margin-bottom: 4 units
+
+Subtitle:
+"Unleash your imagination with Reaxo's state-of-the-art AI models. Compare responses from multiple AIs instantly."
+- Large readable text (lg on mobile, xl on tablet)
+- Zinc-400 color
+- Max-width: 2xl
+- Centered
+- Margin-bottom: 10 units
+
+Warning Message (when no models enabled):
+- Padding: px-5, py-3
+- Rounded: full
+- Background: amber-500/10
+- Border: amber-500/30
+- Text: amber-400, sm, medium font
+- Margin-bottom: 8 units
+
+Suggestion Pills:
+- Flex, wrap, justify-center
+- Gap: 3 units
+- Max-width: 2xl
+
+Each suggestion pill:
+- Padding: px-5, py-3
+- Background: zinc-900/60, hover: zinc-800/80
+- Border: zinc-700/50, hover: zinc-600
+- Rounded: full
+- Text: sm, zinc-300, hover: white
+- Backdrop blur
+- Transition: all duration 200
+
+Suggestions shown:
+1. "Explain quantum computing simply"
+2. "Write a haiku about technology"
+3. "What are 3 startup ideas for AI?"
+4. "How do I learn to code?"
+
+CONVERSATION STATE (When messages exist):
+- Space-y-10 layout
+- Max-width: 1800px
+- Centered (mx-auto)
+- Padding: 4 units on mobile, 6 units on tablet, 8 units on desktop
+- Padding-bottom: 40 units (to account for fixed input at bottom)
+
+Each Conversation Turn:
+- Space-y-6 layout
+
+User Prompt Display:
+- Flex, justify-center
+- Max-width: 3xl, full width
+- Background: zinc-900
+- Rounded: 2xl
+- Padding: px-6, py-5
+- Border: zinc-800
+- Contains: Label "YOUR PROMPT" (xs, semibold, zinc-500, uppercase, tracking-wider, margin-bottom 2) + prompt text (lg, medium, white)
+
+AI Response Grid:
+- Grid layout with responsive columns based on enabled models count:
+  * 1-2 models: grid-cols-1 md:grid-cols-2
+  * 3-4 models: grid-cols-1 md:grid-cols-2 xl:grid-cols-4
+  * 5+ models: grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4
+- Gap: 4 units
+
+Response Card Structure (for each model):
+- Background: zinc-900
+- Rounded: 2xl
+- Border: zinc-800
+- Overflow: hidden
+- Group class for hover effects
+
+Card Header:
+- Flex row, gap-2, padding (px-3, py-2)
+- Border-bottom: zinc-800
+- Background: zinc-800/40
+- Contains: Provider logo (5x5, rounded-full, provider color) + model info + (responsive, on hover shows extra buttons)
+
+Model Info:
+- Flex: 1, min-width 0 (prevents overflow)
+- Model name: text-xs (11px), font-medium, truncated
+- Provider name: text-xs (9px), zinc-500
+
+Card Body:
+- Padding: 3 units
+- Height: 96px (h-24)
+- Text: text-xs (10px), zinc-400, leading-relaxed, line-clamped to 5 lines
+- Shows the AI response text
+
+Card Footer:
+- Padding: px-3, py-1.5
+- Border-top: zinc-800
+- Background: zinc-900/50
+- Flex layout with space-between
+- Left: word count (text-xs, zinc-600)
+- Right: action buttons (copy button, remove button)
+  * Copy button: icon button, appears on hover, transitions opacity
+  * Shows "Check" icon when copied, "Copy" icon normally
+  * Background: zinc-800, icon: zinc-400
+
+Loading State (in card):
+- When isLoading is true, shows animated spinner
+- Before content finishes loading
+
+Error State (in card):
+- When error exists, shows error message in red/destructive color
+
+Remove Model Button (X icon):
+- Visible on hover in card header
+- Removes this specific model's response from the turn
+- Also disables the model from future queries
+
+3.4 INPUT AREA (Fixed at bottom)
+------------------------------
+Container:
+- Padding: 4 units (bottom section)
+- Sticky or fixed positioning
+- Background: gradient or semi-transparent dark
+
+Form Container:
+- Max-width: 2xl
+- Centered (mx-auto)
+
+Input Bar:
+- Flex layout, gap-3
+- Background: zinc-800/80
+- Border: white/10
+- Rounded: 2xl
+- Padding: px-4, py-3
+- Shadow: shadow-lg
+
+Components:
+1. Icon button (left): bg-zinc-700/80, rounded-xl, 8x8, centered
+   - Add icon (SVG)
+
+2. Textarea (main input):
+   - Flex: 1
+   - Text: sm, zinc-500
+   - Placeholder: "Ask anything to multiple AIs..."
+   - Resizable (allow vertical expansion)
+   - Background: transparent (inherits from parent)
+   - Border: none (inherits from parent)
+   - Focus: outline-none
+   - Text wrap
+
+3. Keyboard shortcut display (right, hidden on mobile):
+   - Flex, gap-1
+   - Text-xs, text-zinc-600
+   - Background: zinc-700/50
+   - Padding: px-2, py-1
+   - Rounded
+   - Shows "⌘ K"
+
+4. Send button (right end):
+   - Icon button, white background
+   - 8x8, rounded-xl
+   - Flex center
+   - Paper plane icon (4x4)
+   - Hover: bg-zinc-100
+   - Disabled state when no input or no models selected
+
+Disclaimer:
+- Text: center, text-xs, amber-500/60
+- Margin-top: 2 units
+- Message: "Reaxo AI can make mistakes. Consider checking important information."
+
+
+PROFILE MODAL
+=============
+
+Similar structure to auth modal but for viewing/editing user profile:
+- Shows user information: name, email, avatar
+- Allows editing profile details
+- Option to upload new avatar
+- Save/Cancel buttons
+- Styled consistently with auth modal
+
+Contains:
+- Profile avatar display (larger, 16x16 or similar)
+- Name field (editable)
+- Email field (display only or editable)
+- Avatar upload button
+- Save button (white, full width)
+- Close button (X in top right)
+
+
+DATA FLOW & STATE MANAGEMENT
+============================
+
+1. App State (in page.tsx):
+   - user: User | null (authenticated user data)
+   - isLoading: boolean (initial auth check)
+   - showAuthModal: boolean (auth modal visibility)
+   - showProfileModal: boolean (profile modal visibility)
+   - isGuestMode: boolean (guest mode flag)
+   - token: string | null (auth token)
+   - profile: User | null (user profile data)
+
+2. Dashboard State (in dashboard.tsx):
+   - enabledModels: Set<string> (selected AI models)
+   - sidebarOpen: boolean (mobile sidebar visibility)
+   - copiedId: string | null (recently copied response id)
+   - conversations: ConversationTurn[] (chat history)
+   - input: string (current user input)
+   - isLoading: boolean (API call in progress)
+
+3. Conversation Structure:
+   - Each turn has: id, prompt, responses[]
+   - Each response has: modelId, content, isLoading, error?
+
+4. Model Structure:
+   - id: string (unique identifier)
+   - name: string (display name)
+   - provider: string (provider name)
+   - description: string
+   - inputCost: string
+   - outputCost: string
+   - contextWindow: string
+   - color: string
+
+
+API ENDPOINTS
+=============
+
+POST /api/chat
+- Accepts: { messages: Array<{role, content}>, model: string }
+- Returns: Server-sent event stream (text/event-stream)
+- Streams JSON chunks with format: data: {choices[0].delta.content}
+- Sends [DONE] when complete
+
+GET /api/models
+- Returns: List of available models with pricing and details
+
+
+MODEL INTEGRATION
+================
+
+20 AI Models supported (grouped by provider):
+
+Google (5 models):
+- Gemini 3 Pro Preview
+- Gemini 3 Flash Preview
+- Gemini 2.5 Pro
+- Gemini 2.5 Flash
+- Gemini 2.5 Flash Lite
+
+Anthropic (2 models):
+- Claude Sonnet 4.5
+- Claude Haiku 4.5
+
+OpenAI (5 models):
+- GPT-5
+- GPT-5 Mini
+- GPT-4.1
+- GPT-4.1 Mini
+- GPT-4o
+- GPT-4o Mini
+
+xAI (1 model):
+- Grok 4 Fast
+
+DeepSeek (1 model):
+- DeepSeek V3.2
+
+Zhipu (1 model):
+- GLM 4.6
+
+Moonshot (1 model):
+- Kimi K2 Thinking
+
+Meta (1 model):
+- Llama 3.3 70B
+
+Alibaba (2 models):
+- Qwen 3 32B
+- Qwen 3 Next
+
+Each model has:
+- Provider logo (sourced from /logos folder)
+- Distinctive background color for logo display
+- Input/output cost information
+- Context window size
+- Model ID for API calls
+
+
+INTERACTION PATTERNS & ANIMATIONS
+==================================
+
+1. Type Animation (Landing Page):
+   - Words cycle: "Parallelly" → "Efficiently" → "Easily"
+   - Speed: 100ms per character when typing, 50ms when deleting
+   - Pause: 1.5s after word completes
+   - Blinking cursor animation
+
+2. Scroll Detection (Navigation):
+   - Navbar becomes opaque/blurred when scrolled past 20px
+   - Smooth transition (300ms)
+
+3. Model Toggle Animation:
+   - Smooth color transitions
+   - Toggle icon changes direction
+
+4. Copy to Clipboard:
+   - Click copy button
+   - Icon changes to "Check"
+   - Reverts after 2 seconds
+   - Toast notification optional
+
+5. Response Streaming:
+   - Text appears character by character as streamed from API
+   - Loading state shown while streaming
+   - Error state if streaming fails
+   - Smooth scroll to bottom as new responses arrive
+
+6. Mobile Sidebar:
+   - Slides in from left with -translate-x-full to 0 transition
+   - Overlay behind (z-40) with main content
+   - Closes when link clicked
+
+7. Grid Responsiveness:
+   - Grid columns adjust based on number of enabled models
+   - Smooth transitions when toggling models on/off
+
+8. Orb Animations (Hero):
+   - Background orbs pulse with subtle animation
+   - Different animation delays for staggered effect
+   - Opacity transitions for depth
+
+
+ACCESSIBILITY & UX CONSIDERATIONS
+==================================
+
+1. Color Contrast:
+   - All text meets WCAG AA standards
+   - Sufficient contrast on dark backgrounds
+   - Interactive elements clearly distinguished
+
+2. Keyboard Navigation:
+   - Tab order follows visual flow
+   - Enter submits forms
+   - Escape closes modals
+   - Keyboard shortcut indicator (⌘ K) for discoverability
+
+3. Focus Indicators:
+   - Clear focus rings on interactive elements
+   - Visible on keyboard navigation
+
+4. Semantic HTML:
+   - Proper heading hierarchy (h1, h2, h3, h4)
+   - Form labels associated with inputs
+   - Button types correctly specified (button, submit)
+   - Links vs buttons semantically correct
+
+5. Loading States:
+   - Spinner or loading indicator shown
+   - Disabled state for buttons during action
+   - Clear communication of progress
+
+6. Error Handling:
+   - Error messages displayed prominently
+   - Helpful error text suggesting action
+   - Form validation with clear feedback
+
+7. Mobile Optimization:
+   - Touch targets min 44x44px
+   - Readable text sizes on all devices
+   - Appropriate spacing for touch interaction
+   - Mobile menu appropriately sized
+
+
+ENVIRONMENT VARIABLES
+=====================
+
+Required:
+- ZEABUR_API_KEY: API key for accessing Zeabur AI Hub (required for chat API to work)
+
+Optional:
+- NEXT_PUBLIC_SUPABASE_URL: Supabase URL for authentication (for future features)
+- NEXT_PUBLIC_SUPABASE_ANON_KEY: Supabase anon key
+
+
+COMPONENTS BREAKDOWN
+====================
+
+Page Structure:
+- app/page.tsx: Main entry point, handles authentication flow
+- src/components/landing-page.tsx: Hero page with features section
+- src/components/dashboard.tsx: Main application interface
+- src/components/auth-modal.tsx: Authentication modal
+- src/components/profile-modal.tsx: User profile editor
+- src/components/markdown-renderer.tsx: Renders AI responses as markdown
+
+UI Components (from Shadcn):
+- Button: Primary action button
+- Input: Text input field
+- Textarea: Multi-line text input
+- Tabs: Tabbed content
+- Dialog: Modal dialogs
+- Popover: Floating popover menu
+- Scroll Area: Custom scrollbar styling
+- Separator: Visual divider
+- Avatar: User profile pictures
+
+Utilities:
+- lib/utils.ts: Tailwind merge and class name utilities
+- lib/models.ts: Model definitions and provider logos
+- lib/insforge-client.ts: API client for user management
+
+
+IMPLEMENTATION NOTES
+====================
+
+1. Responsive Design:
+   - Mobile-first approach using Tailwind breakpoints (md:, lg:, xl:)
+   - Test on multiple screen sizes
+   - Ensure touch targets are appropriately sized on mobile
+
+2. Performance:
+   - Lazy load images and components
+   - Minimize layout shifts when content loads
+   - Optimize animations for smooth 60fps performance
+   - Use CSS for animations where possible (not JS)
+
+3. Styling Approach:
+   - Use Tailwind CSS utilities exclusively
+   - Define custom design tokens in globals.css
+   - Use CSS variables for theme colors (--color-*, --background, etc.)
+   - No inline styles unless absolutely necessary
+
+4. State Management:
+   - Keep state as close to usage as possible
+   - Lift state for shared data between components
+   - Use props for data flow
+   - Avoid prop drilling for deeply nested components
+
+5. AI Integration:
+   - Stream responses from API for better UX
+   - Handle errors gracefully with fallback messages
+   - Show loading states during API calls
+   - Implement retry logic for failed requests
+
+6. Security:
+   - Sanitize user input
+   - Never store sensitive data in localStorage unencrypted
+   - Validate all API requests on backend
+   - Use environment variables for API keys
+
+7. Browser Compatibility:
+   - Support modern browsers (Chrome, Firefox, Safari, Edge)
+   - Use CSS features that are well-supported
+   - Fallbacks for gradient and animation support
+
+8. Testing:
+   - Test all user flows (auth, chat, model selection)
+   - Test responsive design on actual devices
+   - Test API error scenarios
+   - Verify accessibility with screen readers
+
+
+DEFAULT CONFIGURATION
+======================
+
+Default Enabled Models:
+- Google Gemini (first available)
+- Anthropic Claude (first available)
+- OpenAI GPT (first available)
+- xAI Grok (first available)
+
+Default Disabled Models:
+- All other models start disabled
+
+Default User (Guest Mode):
+- Name: "Guest"
+- Email: "guest@reaxo.ai"
+- Avatar: Default avatar image
+
+Default Chat Settings:
+- Chat history not persisted in guest mode
+- Models reset when session ends
+- No persistent preferences
+
+
+FONT & TYPOGRAPHY SPECIFICATIONS
+=================================
+
+Font Family:
+- Inter from Google Fonts (default sans-serif)
+- Fallback chain: Inter, Inter Fallback, sans-serif
+- Loaded in app/layout.tsx
+
+Font Sizes:
+- xs: 12px (labels, captions)
+- sm: 14px (body text)
+- base: 16px (default text)
+- lg: 18px (larger text)
+- xl: 20px (section text)
+- 2xl: 24px (headings)
+- 3xl: 30px (subheadings)
+- 4xl: 36px (large headings)
+- 5xl: 48px (hero text on tablets)
+- 6xl: 60px (hero text on desktop)
+- 7xl: 84px (large hero text)
+- 8xl: 96px (extra large hero text)
+
+Font Weights:
+- 400: Regular body text
+- 500: Medium (labels, emphasis)
+- 600: Semibold (headings, strong emphasis)
+- 700: Bold (main headings, titles)
+- 800: Extra bold (rare, only for very large display text)
+
+Line Heights:
+- 1.4: Tight (headings, dense text)
+- 1.5: Normal (body text)
+- 1.6: Relaxed (readable body text)
+- 1.8: Very relaxed (large text, accessibility)
+
+Letter Spacing:
+- Normal: Default
+- Tight: -0.02em (headings, titles)
+- Wider: 0.05em (labels, uppercase text)
+
+Text Rendering:
+- Antialiased class applied (smooth rendering)
+- Text balance for optimal line breaks in headings
+
+
+IMAGES & ASSETS
+===============
+
+Required Images:
+- /images/reaxo-logo.webp: Main app logo (8x8 in navbar, 10x10 in sidebar, 12x12 in modal)
+- /images/default-avatar.webp: Default user avatar
+- /images/image.png: Sample user profile image for landing page demo
+- /logos/google.png: Google provider logo
+- /logos/anthropic.png: Anthropic provider logo
+- /logos/openai.png: OpenAI provider logo
+- /logos/xai.png: xAI provider logo
+- /logos/deepseek.png: DeepSeek provider logo
+- /logos/zhipu.png: Zhipu provider logo
+- /logos/moonshot.png: Moonshot provider logo
+- /logos/meta.png: Meta provider logo
+- /logos/alibaba.png: Alibaba provider logo
+- /logos/kimi.png: Kimi provider logo
+- https://zeabur.com/logo.svg: External Zeabur logo (referenced directly)
+
+All images should be optimized for web (WebP format where possible, compressed)
+
+
+FINAL NOTES
+===========
+
+This prompt describes a production-ready AI chat platform with:
+- Beautiful dark theme with cyan accents
+- Smooth animations and transitions
+- Responsive design for all devices
+- 20+ integrated AI models
+- Real-time response comparison
+- User authentication and profiles
+- Clean, modular component structure
+- Accessibility best practices
+- Performance optimizations
+
+The implementation uses modern React patterns, Tailwind CSS for styling, and a backend API for AI model access. All code follows TypeScript best practices and is fully typed.
+
+═══════════════════════════════════════════════════════════════════════════════
+                              END OF PROMPT
+═══════════════════════════════════════════════════════════════════════════════
